@@ -26,10 +26,15 @@ class Disciple_Tools_Plugin_Starter_Magic_Link extends DT_Magic_Url_Base {
         $this->meta_key = $this->root . '_' . $this->type . '_magic_key';
         parent::__construct();
 
-        // load endpoints before bailing
+        /**
+         * post type and module section
+         */
         add_action( 'dt_details_additional_section', [ $this, 'dt_details_additional_section' ], 30, 2 );
         add_action( 'rest_api_init', [ $this, 'add_endpoints' ] );
 
+        /**
+         * Magic Url Section
+         */
         //don't load the magic link page for other urls
         if ( !$this->check_parts_match() ){
             return;

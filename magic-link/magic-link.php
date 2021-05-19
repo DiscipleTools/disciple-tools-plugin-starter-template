@@ -1,12 +1,10 @@
 <?php
 if ( !defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly.
 
-if ( strpos( dt_get_url_path(), 'magic_app' ) !== false ){
-    Disciple_Tools_Plugin_Starter_Magic_Link::instance();
-}
+Disciple_Tools_Plugin_Starter_Magic_Link::instance();
 
-class Disciple_Tools_Plugin_Starter_Magic_Link
-{
+class Disciple_Tools_Plugin_Starter_Magic_Link extends DT_Magic_Url_Base {
+
 
     public $magic = false;
     public $parts = false;
@@ -14,7 +12,7 @@ class Disciple_Tools_Plugin_Starter_Magic_Link
     public $root = "magic_app"; // @todo define the root of the url {yoursite}/root/type/key/action
     public $type = 'magic_type'; // @todo define the type
     public $post_type = 'contacts'; // @todo set the post type this magic link connects with.
-
+    private $meta_key = '';
 
     private static $_instance = null;
     public static function instance() {
@@ -25,15 +23,17 @@ class Disciple_Tools_Plugin_Starter_Magic_Link
     } // End instance()
 
     public function __construct() {
+        $this->meta_key = $this->root . '_' . $this->type . '_magic_key';
+        parent::__construct();
 
-        // register type
-        $this->magic = new DT_Magic_URL( $this->root );
-        add_filter( 'dt_magic_url_register_types', [ $this, '_register_type' ], 10, 1 );
-
-        // register REST and REST access
-        add_filter( 'dt_allow_rest_access', [ $this, '_authorize_url' ], 10, 1 );
+        // load endpoints before bailing
+        add_action( 'dt_details_additional_section', [ $this, 'dt_details_additional_section' ], 30, 2 );
         add_action( 'rest_api_init', [ $this, 'add_endpoints' ] );
 
+        //don't load the magic link page for other urls
+        if ( !$this->check_parts_match() ){
+            return;
+        }
 
         // fail if not valid url
         $url = dt_get_url_path();
@@ -41,99 +41,35 @@ class Disciple_Tools_Plugin_Starter_Magic_Link
             return;
         }
 
-        // fail to blank if not valid url
-        $this->parts = $this->magic->parse_url_parts();
-        if ( ! $this->parts ){
-            // @note this returns a blank page for bad url, instead of redirecting to login
-            add_filter( 'dt_templates_for_urls', function ( $template_for_url ) {
-                $url = dt_get_url_path();
-                $template_for_url[ $url ] = 'template-blank.php';
-                return $template_for_url;
-            }, 199, 1 );
-            add_filter( 'dt_blank_access', function(){ return true;
-            } );
-            add_filter( 'dt_allow_non_login_access', function(){ return true;
-            }, 100, 1 );
-            return;
-        }
-
-        // fail if does not match type
-        if ( $this->type !== $this->parts['type'] ){
-            return;
-        }
-
         // load if valid url
-        add_filter( "dt_blank_title", [ $this, "_browser_tab_title" ] );
         add_action( 'dt_blank_head', [ $this, '_header' ] );
         add_action( 'dt_blank_footer', [ $this, '_footer' ] );
         add_action( 'dt_blank_body', [ $this, 'body' ] ); // body for no post key
 
-        // load page elements
-        add_action( 'wp_print_scripts', [ $this, '_print_scripts' ], 1500 );
-        add_action( 'wp_print_styles', [ $this, '_print_styles' ], 1500 );
-
-        // register url and access
-        add_filter( 'dt_templates_for_urls', [ $this, '_register_url' ], 199, 1 );
-        add_filter( 'dt_blank_access', [ $this, '_has_access' ] );
-        add_filter( 'dt_allow_non_login_access', function(){ return true;
-        }, 100, 1 );
     }
 
-    public function _register_type( array $types ) : array {
-        if ( ! isset( $types[$this->root] ) ) {
-            $types[$this->root] = [];
-        }
-        $types[$this->root][$this->type] = [
-            'name' => $this->title,
-            'root' => $this->root,
-            'type' => $this->type,
-            'meta_key' => 'public_key',
-            'actions' => [
-                '' => 'Manage',
-            ],
-            'post_type' => $this->post_type,
-        ];
-        return $types;
-    }
-    public function _register_url( $template_for_url ){
-        $parts = $this->parts;
+    public function dt_details_additional_section( $section, $post_type ) {
+        // test if campaigns post type and campaigns_app_module enabled
+        if ( $post_type === $this->post_type ) {
+            if ( 'other' === $section ) {
+                $record = DT_Posts::get_post( $post_type, get_the_ID() );
+                if ( isset( $record['type']['key'] )) {
+                    if ( isset( $record[$this->meta_key] )) {
+                        $key = $record[$this->meta_key];
+                    } else {
+                        $key = DT_Magic_URL::create_unique_key();
+                        update_post_meta( get_the_ID(), $this->meta_key, $key );
+                    }
+                    $link = DT_Magic_URL::get_link_url( $this->root, $this->type, $key )
+                    ?>
+                    <a class="button" href="<?php echo esc_html( $link ); ?>" target="_blank">Open magic link</a>
 
-        // test 1 : correct url root and type
-        if ( ! $parts ){ // parts returns false
-            return $template_for_url;
+                    <?php
+                }
+            }
         }
-
-        // test 2 : only base url requested
-        if ( empty( $parts['public_key'] ) ){ // no public key present
-            $template_for_url[ $parts['root'] . '/'. $parts['type'] ] = 'template-blank.php';
-            return $template_for_url;
-        }
-
-        // test 3 : no specific action requested
-        if ( empty( $parts['action'] ) ){ // only root public key requested
-            $template_for_url[ $parts['root'] . '/'. $parts['type'] . '/' . $parts['public_key'] ] = 'template-blank.php';
-            return $template_for_url;
-        }
-
-        // test 4 : valid action requested
-        $actions = $this->magic->list_actions( $parts['type'] );
-        if ( isset( $actions[ $parts['action'] ] ) ){
-            $template_for_url[ $parts['root'] . '/'. $parts['type'] . '/' . $parts['public_key'] . '/' . $parts['action'] ] = 'template-blank.php';
-        }
-
-        return $template_for_url;
     }
 
-    public function _has_access() : bool {
-        $parts = $this->parts;
-
-        // test 1 : correct url root and type
-        if ( $parts ){ // parts returns false
-            return true;
-        }
-
-        return false;
-    }
 
     public function _header(){
         wp_head();
@@ -142,67 +78,6 @@ class Disciple_Tools_Plugin_Starter_Magic_Link
     }
     public function _footer(){
         wp_footer();
-    }
-    public function _authorize_url( $authorized ){
-        if ( isset( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), $this->root . '/v1/'.$this->type ) !== false ) {
-            $authorized = true;
-        }
-        return $authorized;
-    }
-
-    public function _print_scripts(){
-        // @link /disciple-tools-theme/dt-assets/functions/enqueue-scripts.php
-        $allowed_js = [
-            'jquery',
-            'lodash',
-            'moment',
-            'datepicker',
-            'site-js',
-            'shared-functions',
-            'mapbox-gl',
-            'mapbox-cookie',
-            'mapbox-search-widget',
-            'google-search-widget',
-            'jquery-cookie',
-        ];
-
-        global $wp_scripts;
-
-        if ( isset( $wp_scripts ) ){
-            foreach ( $wp_scripts->queue as $key => $item ){
-                if ( ! in_array( $item, $allowed_js ) ){
-                    unset( $wp_scripts->queue[$key] );
-                }
-            }
-        }
-        unset( $wp_scripts->registered['mapbox-search-widget']->extra['group'] );
-    }
-    public function _print_styles(){
-        // @link /disciple-tools-theme/dt-assets/functions/enqueue-scripts.php
-        $allowed_css = [
-            'foundation-css',
-            'jquery-ui-site-css',
-            'site-css',
-            'datepicker-css',
-            'mapbox-gl-css'
-        ];
-
-        global $wp_styles;
-        if ( isset( $wp_styles ) ) {
-            foreach ($wp_styles->queue as $key => $item) {
-                if ( !in_array( $item, $allowed_css )) {
-                    unset( $wp_styles->queue[$key] );
-                }
-            }
-        }
-    }
-
-
-    public function _browser_tab_title( $title ){
-        /**
-         * Places a title on the web browser tab.
-         */
-        return __( "Magic", 'disciple_tools' );
     }
 
     public function header_style(){
@@ -306,6 +181,10 @@ class Disciple_Tools_Plugin_Starter_Magic_Link
                 [
                     'methods'  => "POST",
                     'callback' => [ $this, 'endpoint' ],
+                    'permission_callback' => function( WP_REST_Request $request ){
+                        $magic = new DT_Magic_URL( $this->root );
+                        return $magic->verify_rest_endpoint_permissions_on_post( $request );
+                    },
                 ],
             ]
         );
@@ -320,13 +199,7 @@ class Disciple_Tools_Plugin_Starter_Magic_Link
 
         $params = dt_recursive_sanitize_array( $params );
         $action = sanitize_text_field( wp_unslash( $params['action'] ) );
-
-        // if parsing public key
-        //        $magic = $this->magic;
-        //        $post_id = $magic->get_post_id( $params['parts']['meta_key'], $params['parts']['public_key'] );
-        //        if ( ! $post_id ){
-        //            return new WP_Error( __METHOD__, "Missing post record", [ 'status' => 400 ] );
-        //        }
+        $post_id = $params["parts"]["post_id"];
 
         switch ( $action ) {
             case 'get':

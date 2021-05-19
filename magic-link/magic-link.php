@@ -8,7 +8,7 @@ class Disciple_Tools_Plugin_Starter_Magic_Link extends DT_Magic_Url_Base {
 
     public $magic = false;
     public $parts = false;
-    public $title = 'Magic';
+    public $page_title = 'Magic';
     public $root = "magic_app"; // @todo define the root of the url {yoursite}/root/type/key/action
     public $type = 'magic_type'; // @todo define the type
     public $post_type = 'contacts'; // @todo set the post type this magic link connects with.
@@ -62,7 +62,7 @@ class Disciple_Tools_Plugin_Starter_Magic_Link extends DT_Magic_Url_Base {
                     if ( isset( $record[$this->meta_key] )) {
                         $key = $record[$this->meta_key];
                     } else {
-                        $key = DT_Magic_URL::create_unique_key();
+                        $key = dt_create_unique_key();
                         update_post_meta( get_the_ID(), $this->meta_key, $key );
                     }
                     $link = DT_Magic_URL::get_link_url( $this->root, $this->type, $key )

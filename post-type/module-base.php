@@ -781,8 +781,8 @@ class Disciple_Tools_Plugin_Starter_Template_Base extends DT_Module_Base {
     // scripts
     public function scripts(){
         if ( is_singular( $this->post_type ) && get_the_ID() && DT_Posts::can_view( $this->post_type, get_the_ID() ) ){
+            $test = "";
             // @todo add enqueue scripts
-            dt_write_log( __METHOD__ );
         }
     }
 }

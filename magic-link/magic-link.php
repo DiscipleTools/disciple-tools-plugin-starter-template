@@ -11,7 +11,7 @@ class Disciple_Tools_Plugin_Starter_Magic_Link extends DT_Magic_Url_Base {
     public $page_title = 'Magic';
     public $root = "magic_app"; // @todo define the root of the url {yoursite}/root/type/key/action
     public $type = 'magic_type'; // @todo define the type
-    public $post_type = 'contacts'; // @todo set the post type this magic link connects with.
+    public $post_type = 'starter_post_type'; // @todo set the post type this magic link connects with.
     private $meta_key = '';
 
     private static $_instance = null;
@@ -30,6 +30,7 @@ class Disciple_Tools_Plugin_Starter_Magic_Link extends DT_Magic_Url_Base {
          * post type and module section
          */
         add_action( 'dt_details_additional_section', [ $this, 'dt_details_additional_section' ], 30, 2 );
+        add_filter( 'dt_details_additional_tiles', [ $this, 'dt_details_additional_tiles' ], 10, 2 );
         add_action( 'rest_api_init', [ $this, 'add_endpoints' ] );
 
         /**
@@ -53,24 +54,31 @@ class Disciple_Tools_Plugin_Starter_Magic_Link extends DT_Magic_Url_Base {
 
     }
 
+    public function dt_details_additional_tiles( $tiles, $post_type = "" ) {
+        if ( $post_type === $this->post_type ){
+            $tiles["dt_starters_magic_url"] = [
+                "label" => __( "Magic Url", 'disciple_tools' ),
+                "description" => "The Magic URL sets up a page accessible without authentication, only the link is needed. Useful for small applications liked to this record, like quick surveys or updates."
+            ];
+        }
+        return $tiles;
+    }
     public function dt_details_additional_section( $section, $post_type ) {
         // test if campaigns post type and campaigns_app_module enabled
         if ( $post_type === $this->post_type ) {
-            if ( 'other' === $section ) {
+            if ( 'dt_starters_magic_url' === $section ) {
                 $record = DT_Posts::get_post( $post_type, get_the_ID() );
-                if ( isset( $record['type']['key'] )) {
-                    if ( isset( $record[$this->meta_key] )) {
-                        $key = $record[$this->meta_key];
-                    } else {
-                        $key = dt_create_unique_key();
-                        update_post_meta( get_the_ID(), $this->meta_key, $key );
-                    }
-                    $link = DT_Magic_URL::get_link_url( $this->root, $this->type, $key )
-                    ?>
-                    <a class="button" href="<?php echo esc_html( $link ); ?>" target="_blank">Open magic link</a>
-
-                    <?php
+                if ( isset( $record[$this->meta_key] )) {
+                    $key = $record[$this->meta_key];
+                } else {
+                    $key = dt_create_unique_key();
+                    update_post_meta( get_the_ID(), $this->meta_key, $key );
                 }
+                $link = DT_Magic_URL::get_link_url( $this->root, $this->type, $key )
+                ?>
+                <p>See help <img class="dt-icon" src="<?php echo esc_html( get_template_directory_uri() . '/dt-assets/images/help.svg' ) ?>"/> for description.</p>
+                <a class="button" href="<?php echo esc_html( $link ); ?>" target="_blank">Open magic link</a>
+                <?php
             }
         }
     }

@@ -150,6 +150,12 @@ class Disciple_Tools_Plugin_Starter_Template {
             add_filter( 'plugin_row_meta', [ $this, 'plugin_description_links' ], 10, 4 );
         }
 
+        /**
+         * @todo Decide if you want to create default workflows
+         * To remove: delete the line below and remove the folder named /workflows
+         */
+        require_once( 'workflows/workflows.php' );
+
     }
 
     /**

@@ -7,8 +7,8 @@ if ( !defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly.
  */
 class Disciple_Tools_Plugin_Starter_Template_Magic_User_App extends DT_Magic_Url_Base {
 
-    public $page_title = 'Magic User App';
-    public $page_description = 'A micro user app page that can be added to home screen.';
+    public $page_title = 'Starter - Magic Links - User App';
+    public $page_description = 'User App - Magic Links.';
     public $root = "magic_app"; // @todo define the root of the url {yoursite}/root/type/key/action
     public $type = 'user_app'; // @todo define the type
     public $post_type = 'user';
@@ -64,12 +64,24 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_User_App extends DT_Magic_Url
     }
 
     public function dt_settings_apps_list( $apps_list ) {
-        $apps_list[$this->meta_key] = [
-            'key' => $this->meta_key,
-            'url_base' => $this->root. '/'. $this->type,
-            'label' => $this->page_title,
+        $apps_list[ $this->meta_key ] = [
+            'key'         => $this->meta_key,
+            'url_base'    => $this->root . '/' . $this->type,
+            'label'       => $this->page_title,
             'description' => $this->page_description,
+            'meta'        => [
+                'app_type'      => 'magic_link',
+                'post_type'     => $this->post_type,
+                'contacts_only' => false,
+                'fields'        => [
+                    [
+                        'id'    => 'name',
+                        'label' => 'Name'
+                    ]
+                ]
+            ]
         ];
+
         return $apps_list;
     }
 

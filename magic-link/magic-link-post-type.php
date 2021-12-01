@@ -9,7 +9,8 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Link extends DT_Magic_Url_Bas
 
     public $magic = false;
     public $parts = false;
-    public $page_title = 'Magic';
+    public $page_title = 'Starter - Magic Links - Post Type';
+    public $page_description = 'Post Type - Magic Links.';
     public $root = "magic_app"; // @todo define the root of the url {yoursite}/root/type/key/action
     public $type = 'magic_type'; // @todo define the type
     public $post_type = 'starter_post_type'; // @todo set the post type this magic link connects with.
@@ -32,6 +33,7 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Link extends DT_Magic_Url_Bas
          */
         add_action( 'dt_details_additional_section', [ $this, 'dt_details_additional_section' ], 30, 2 );
         add_filter( 'dt_details_additional_tiles', [ $this, 'dt_details_additional_tiles' ], 10, 2 );
+        add_filter( 'dt_settings_apps_list', [ $this, 'dt_settings_apps_list' ], 10, 1 );
         add_action( 'rest_api_init', [ $this, 'add_endpoints' ] );
 
 
@@ -98,6 +100,28 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Link extends DT_Magic_Url_Bas
                 <?php
             }
         }
+    }
+
+    public function dt_settings_apps_list( $apps_list ) {
+        $apps_list[ $this->meta_key ] = [
+            'key'         => $this->meta_key,
+            'url_base'    => $this->root . '/' . $this->type,
+            'label'       => $this->page_title,
+            'description' => $this->page_description,
+            'meta'        => [
+                'app_type'      => 'magic_link',
+                'post_type'     => $this->post_type,
+                'contacts_only' => true,
+                'fields'        => [
+                    [
+                        'id'    => 'name',
+                        'label' => 'Name'
+                    ]
+                ]
+            ]
+        ];
+
+        return $apps_list;
     }
 
     /**

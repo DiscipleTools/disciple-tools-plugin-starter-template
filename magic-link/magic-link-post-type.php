@@ -14,8 +14,7 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Link extends DT_Magic_Url_Bas
     public $root = "magic_app"; // @todo define the root of the url {yoursite}/root/type/key/action
     public $type = 'magic_type'; // @todo define the type
     public $post_type = 'starter_post_type'; // @todo set the post type this magic link connects with.
-    public $meta_key = '';
-    private $meta_key_raw = '';
+    private $meta_key = '';
 
     private static $_instance = null;
     public static function instance() {
@@ -26,13 +25,7 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Link extends DT_Magic_Url_Bas
     } // End instance()
 
     public function __construct() {
-        $this->meta_key_raw = $this->meta_key = $this->root . '_' . $this->type . '_magic_key';
-
-        /**
-         * Ensure to append link obj id, if available!
-         */
-        $link_obj_id    = $this->fetch_incoming_link_param( 'id' );
-        $this->meta_key .= ( ! empty( $link_obj_id ) ) ? '_' . $link_obj_id : '';
+        $this->meta_key = $this->root . '_' . $this->type . '_magic_key';
         parent::__construct();
 
         /**
@@ -63,20 +56,6 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Link extends DT_Magic_Url_Bas
         add_filter( 'dt_magic_url_base_allowed_css', [ $this, 'dt_magic_url_base_allowed_css' ], 10, 1 );
         add_filter( 'dt_magic_url_base_allowed_js', [ $this, 'dt_magic_url_base_allowed_js' ], 10, 1 );
 
-    }
-
-    public function adjust_global_values_by_incoming_meta_key( $key ) {
-        if ( ! empty( $key ) ) {
-            $this->meta_key = $key;
-        }
-    }
-
-    public function fetch_incoming_link_param( $param ) {
-        if ( isset( $_SERVER['REQUEST_URI'] ) ) {
-            parse_str( parse_url( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), PHP_URL_QUERY ), $link_params );
-
-            return $link_params[ $param ] ?? '';
-        }
     }
 
     public function dt_magic_url_base_allowed_js( $allowed_js ) {
@@ -124,12 +103,13 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Link extends DT_Magic_Url_Bas
     }
 
     public function dt_settings_apps_list( $apps_list ) {
-        $apps_list[ $this->meta_key_raw ] = [
-            'key'         => $this->meta_key_raw,
-            'url_base'    => $this->root . '/' . $this->type,
-            'label'       => $this->page_title,
-            'description' => $this->page_description,
-            'meta'        => [
+        $apps_list[ $this->meta_key ] = [
+            'key'              => $this->meta_key,
+            'url_base'         => $this->root . '/' . $this->type,
+            'label'            => $this->page_title,
+            'description'      => $this->page_description,
+            'settings_display' => false,
+            'meta'             => [
                 'app_type'      => 'magic_link',
                 'post_type'     => $this->post_type,
                 'contacts_only' => true,
@@ -332,7 +312,7 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Link extends DT_Magic_Url_Bas
                     'callback' => [ $this, 'endpoint_get' ],
                     'permission_callback' => function( WP_REST_Request $request ){
                         $magic = new DT_Magic_URL( $this->root );
-                        $this->adjust_global_values_by_incoming_meta_key( $request->get_params()['parts']['meta_key'] );
+
                         return $magic->verify_rest_endpoint_permissions_on_post( $request );
                     },
                 ],
@@ -345,7 +325,7 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Link extends DT_Magic_Url_Bas
                     'callback' => [ $this, 'update_record' ],
                     'permission_callback' => function( WP_REST_Request $request ){
                         $magic = new DT_Magic_URL( $this->root );
-                        $this->adjust_global_values_by_incoming_meta_key( $request->get_params()['parts']['meta_key'] );
+
                         return $magic->verify_rest_endpoint_permissions_on_post( $request );
                     },
                 ],

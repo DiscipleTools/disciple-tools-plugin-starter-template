@@ -102,6 +102,25 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Link extends DT_Magic_Url_Bas
         }
     }
 
+    /**
+     * Builds magic link type settings payload:
+     * - key:               Unique magic link type key; which is usually composed of root, type and _magic_key suffix.
+     * - url_base:          URL path information to map with parent magic link type.
+     * - label:             Magic link type name.
+     * - description:       Magic link type description.
+     * - settings_display:  Boolean flag which determines if magic link type is to be listed within frontend user profile settings.
+     * - meta:              Magic link plugin related data.
+     *      - app_type:     Flag indicating type to be processed by magic link plugin.
+     *      - post_type     Magic link type post type.
+     *      - contacts_only:    Boolean flag indicating how magic link type user assignments are to be handled within magic link plugin.
+     *                          If True, lookup field to be provided within plugin for contacts only searching.
+     *                          If false, Dropdown option to be provided for user, team or group selection.
+     *      - fields:       List of fields to be displayed within magic link frontend form.
+     *
+     * @param $apps_list
+     *
+     * @return mixed
+     */
     public function dt_settings_apps_list( $apps_list ) {
         $apps_list[ $this->meta_key ] = [
             'key'              => $this->meta_key,

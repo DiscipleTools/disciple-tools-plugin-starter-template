@@ -11,12 +11,14 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Link extends DT_Magic_Url_Bas
     public $parts = false;
     public $page_title = 'Starter - Magic Links - Post Type';
     public $page_description = 'Post Type - Magic Links.';
-    public $root = "magic_app"; // @todo define the root of the url {yoursite}/root/type/key/action
-    public $type = 'magic_type'; // @todo define the type
+    public $root = "starter_magic_app"; // @todo define the root of the url {yoursite}/root/type/key/action
+    public $type = 'starter_magic_type'; // @todo define the type
     public $post_type = 'starter_post_type'; // @todo set the post type this magic link connects with.
     private $meta_key = '';
 
     private static $_instance = null;
+    public $meta = []; // Allows for instance specific data.
+
     public static function instance() {
         if ( is_null( self::$_instance ) ) {
             self::$_instance = new self();
@@ -25,6 +27,31 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Link extends DT_Magic_Url_Bas
     } // End instance()
 
     public function __construct() {
+
+        /**
+         * Specify metadata structure, specific to the processing of current
+         * magic link type.
+         *
+         * - meta:              Magic link plugin related data.
+         *      - app_type:     Flag indicating type to be processed by magic link plugin.
+         *      - post_type     Magic link type post type.
+         *      - contacts_only:    Boolean flag indicating how magic link type user assignments are to be handled within magic link plugin.
+         *                          If True, lookup field to be provided within plugin for contacts only searching.
+         *                          If false, Dropdown option to be provided for user, team or group selection.
+         *      - fields:       List of fields to be displayed within magic link frontend form.
+         */
+        $this->meta = [
+            'app_type'      => 'magic_link',
+            'post_type'     => $this->post_type,
+            'contacts_only' => true,
+            'fields'        => [
+                [
+                    'id'    => 'name',
+                    'label' => 'Name'
+                ]
+            ]
+        ];
+
         $this->meta_key = $this->root . '_' . $this->type . '_magic_key';
         parent::__construct();
 
@@ -109,13 +136,6 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Link extends DT_Magic_Url_Bas
      * - label:             Magic link type name.
      * - description:       Magic link type description.
      * - settings_display:  Boolean flag which determines if magic link type is to be listed within frontend user profile settings.
-     * - meta:              Magic link plugin related data.
-     *      - app_type:     Flag indicating type to be processed by magic link plugin.
-     *      - post_type     Magic link type post type.
-     *      - contacts_only:    Boolean flag indicating how magic link type user assignments are to be handled within magic link plugin.
-     *                          If True, lookup field to be provided within plugin for contacts only searching.
-     *                          If false, Dropdown option to be provided for user, team or group selection.
-     *      - fields:       List of fields to be displayed within magic link frontend form.
      *
      * @param $apps_list
      *
@@ -127,18 +147,7 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Link extends DT_Magic_Url_Bas
             'url_base'         => $this->root . '/' . $this->type,
             'label'            => $this->page_title,
             'description'      => $this->page_description,
-            'settings_display' => false,
-            'meta'             => [
-                'app_type'      => 'magic_link',
-                'post_type'     => $this->post_type,
-                'contacts_only' => true,
-                'fields'        => [
-                    [
-                        'id'    => 'name',
-                        'label' => 'Name'
-                    ]
-                ]
-            ]
+            'settings_display' => false
         ];
 
         return $apps_list;

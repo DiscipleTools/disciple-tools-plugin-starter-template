@@ -63,6 +63,7 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Link extends DT_Magic_Url_Bas
         add_action( 'dt_details_additional_section', [ $this, 'dt_details_additional_section' ], 30, 2 );
         add_filter( 'dt_details_additional_tiles', [ $this, 'dt_details_additional_tiles' ], 10, 2 );
         add_filter( 'dt_settings_apps_list', [ $this, 'dt_settings_apps_list' ], 10, 1 );
+        add_action( 'rest_api_init', [ $this, 'add_endpoints' ] );
 
 
         /**
@@ -72,7 +73,6 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Link extends DT_Magic_Url_Bas
         if ( strpos( $url, $this->root . '/' . $this->type ) === false ) {
             return;
         }
-        add_action( 'rest_api_init', [ $this, 'add_endpoints' ] );
         /**
          * tests magic link parts are registered and have valid elements
          */
@@ -96,12 +96,13 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Link extends DT_Magic_Url_Bas
         wp_localize_script(
             'magic_link_scripts', 'jsObject', [
                 'map_key' => DT_Mapbox_API::get_key(),
-                'root' => esc_url_raw( rest_url() ),
+                'rest_base' => esc_url( rest_url() ),
                 'nonce' => wp_create_nonce( 'wp_rest' ),
                 'parts' => $this->parts,
                 'translations' => [
                     'add' => __( 'Add Magic', 'disciple-tools-plugin-starter-template' ),
                 ],
+                'rest_namespace' => $this->root . '/v1/' . $this->type,
             ]
         );
         wp_enqueue_style( 'magic_link_css', trailingslashit( plugin_dir_url( __FILE__ ) ) . 'magic-link.css', [], filemtime( plugin_dir_path( __FILE__ ) . 'magic-link.css' ) );
@@ -135,14 +136,7 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Link extends DT_Magic_Url_Bas
         // test if campaigns post type and campaigns_app_module enabled
         if ( $post_type === $this->post_type ) {
             if ( 'dt_starters_magic_url' === $section ) {
-                $record = DT_Posts::get_post( $post_type, get_the_ID() );
-                if ( isset( $record[$this->meta_key] ) ) {
-                    $key = $record[$this->meta_key];
-                } else {
-                    $key = dt_create_unique_key();
-                    update_post_meta( get_the_ID(), $this->meta_key, $key );
-                }
-                $link = DT_Magic_URL::get_link_url( $this->root, $this->type, $key )
+                $link = DT_Magic_URL::get_link_url_for_post( $post_type, get_the_ID(), $this->root, $this->type )
                 ?>
                 <p>See help <img class="dt-icon" src="<?php echo esc_html( get_template_directory_uri() . '/dt-assets/images/help.svg' ) ?>"/> for description.</p>
                 <a class="button" href="<?php echo esc_html( $link ); ?>" target="_blank">Open magic link</a>
@@ -226,9 +220,9 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Link extends DT_Magic_Url_Bas
      * @link https://github.com/DiscipleTools/disciple-tools-theme/wiki/Site-to-Site-Link for outside of wordpress authentication
      */
     public function add_endpoints() {
-        $namespace = $this->root . '/'.$this->type;
+        $namespace = $this->root . '/v1';
         register_rest_route(
-            $namespace, '/', [
+            $namespace, '/' . $this->type, [
                 [
                     'methods'  => "GET",
                     'callback' => [ $this, 'endpoint_get' ],
@@ -241,7 +235,7 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Link extends DT_Magic_Url_Bas
             ]
         );
         register_rest_route(
-            $namespace, '/'.$this->type, [
+            $namespace, '/' . $this->type, [
                 [
                     'methods'  => "POST",
                     'callback' => [ $this, 'update_record' ],

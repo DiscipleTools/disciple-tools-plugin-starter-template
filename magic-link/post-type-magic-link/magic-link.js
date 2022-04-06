@@ -1,14 +1,5 @@
 window.get_magic = () => {
-  jQuery.ajax({
-    type: "GET",
-    data: { action: 'get', parts: jsObject.parts },
-    contentType: "application/json; charset=utf-8",
-    dataType: "json",
-    url: jsObject.root + jsObject.parts.root + '/' + jsObject.parts.type,
-    beforeSend: function (xhr) {
-      xhr.setRequestHeader('X-WP-Nonce', jsObject.nonce )
-    }
-  })
+  window.makeRequest( "GET", '/', { action: 'get', parts: jsObject.parts }, jsObject.rest_namespace )
   .done(function(data){
     window.load_magic( data )
   })
@@ -60,7 +51,7 @@ $('#submit-form').on("click", function (){
     comment
   }
 
-  window.makeRequest( "POST", jsObject.parts.type, { parts: jsObject.parts, update }, jsObject.parts.root + '/v1/' ).done(function(data){
+  window.makeRequest( "POST", '/', { parts: jsObject.parts, update }, jsObject.rest_namespace ).done(function(data){
     window.location.reload()
   })
   .fail(function(e) {

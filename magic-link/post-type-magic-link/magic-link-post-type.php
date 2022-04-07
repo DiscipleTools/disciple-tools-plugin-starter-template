@@ -16,7 +16,7 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Link extends DT_Magic_Url_Bas
     public $post_type = 'starter_post_type'; // @todo set the post type this magic link connects with.
     private $meta_key = '';
     public $show_bulk_send = false;
-    public $show_app_tile = true;
+    public $show_app_tile = true; // show this magic link in the Apps tile on the post record
 
     private static $_instance = null;
     public $meta = []; // Allows for instance specific data.
@@ -60,9 +60,8 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Link extends DT_Magic_Url_Bas
         /**
          * post type and module section
          */
-        add_action( 'dt_details_additional_section', [ $this, 'dt_details_additional_section' ], 30, 2 );
-        add_filter( 'dt_details_additional_tiles', [ $this, 'dt_details_additional_tiles' ], 10, 2 );
-        add_filter( 'dt_settings_apps_list', [ $this, 'dt_settings_apps_list' ], 10, 1 );
+//        add_action( 'dt_details_additional_section', [ $this, 'dt_details_additional_section' ], 30, 2 );
+//        add_filter( 'dt_details_additional_tiles', [ $this, 'dt_details_additional_tiles' ], 10, 2 );
         add_action( 'rest_api_init', [ $this, 'add_endpoints' ] );
 
 
@@ -145,30 +144,6 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Link extends DT_Magic_Url_Bas
         }
     }
 
-    /**
-     * Builds magic link type settings payload:
-     * - key:               Unique magic link type key; which is usually composed of root, type and _magic_key suffix.
-     * - url_base:          URL path information to map with parent magic link type.
-     * - label:             Magic link type name.
-     * - description:       Magic link type description.
-     * - settings_display:  Boolean flag which determines if magic link type is to be listed within frontend user profile settings.
-     *
-     * @param $apps_list
-     *
-     * @return mixed
-     */
-    public function dt_settings_apps_list( $apps_list ) {
-        $apps_list[ $this->meta_key ] = [
-            'key'              => $this->meta_key,
-            'url_base'         => $this->root . '/' . $this->type,
-            'label'            => $this->page_title,
-            'description'      => $this->page_description,
-            'settings_display' => false
-        ];
-
-        return $apps_list;
-    }
-
     public function body(){
         ?>
         <div id="magic-link-wrapper">
@@ -193,7 +168,7 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Link extends DT_Magic_Url_Bas
                     <?php
                     $post_id = $this->parts["post_id"];
 
-                    // get the past. Make sure to only display the needed pieces on the front end as this link does net require auth
+                    // get the post. Make sure to only display the needed pieces on the front end as this link does net require auth
                     $post = DT_Posts::get_post( $this->post_type, $post_id, true, false );
                     if ( is_wp_error( $post ) ){
                         return;

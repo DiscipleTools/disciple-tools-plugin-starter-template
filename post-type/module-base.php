@@ -43,6 +43,7 @@ class Disciple_Tools_Plugin_Starter_Template_Base extends DT_Module_Base {
         add_filter( 'dt_details_additional_tiles', [ $this, 'dt_details_additional_tiles' ], 10, 2 );
         add_action( 'dt_details_additional_section', [ $this, 'dt_details_additional_section' ], 20, 2 );
         add_action( 'wp_enqueue_scripts', [ $this, 'scripts' ], 99 );
+        add_filter( 'dt_get_post_type_settings', [ $this, 'dt_get_post_type_settings' ], 20, 2 );
 
         // hooks
         add_action( "post_connection_removed", [ $this, "post_connection_removed" ], 10, 4 );
@@ -59,9 +60,26 @@ class Disciple_Tools_Plugin_Starter_Template_Base extends DT_Module_Base {
     }
 
     public function after_setup_theme(){
+        $this->single_name = __( "Starter", 'disciple-tools-plugin-starter-template' );
+        $this->plural_name = __( "Starters", 'disciple-tools-plugin-starter-template' );
+
         if ( class_exists( 'Disciple_Tools_Post_Type_Template' ) ) {
             new Disciple_Tools_Post_Type_Template( $this->post_type, $this->single_name, $this->plural_name );
         }
+    }
+
+      /**
+     * Set the singular and plural translations for this post types settings
+     * The add_filter is set onto a higher priority than the one in Disciple_tools_Post_Type_Template
+     * so as to enable localisation changes. Otherwise the system translation passed in to the custom post type
+     * will prevail.
+     */
+    public function dt_get_post_type_settings( $settings, $post_type ){
+        if ( $post_type === $this->post_type ){
+            $settings['label_singular'] = __( "Starter", 'disciple-tools-plugin-starter-template' );
+            $settings['label_plural'] = __( "Starters", 'disciple-tools-plugin-starter-template' );
+        }
+        return $settings;
     }
 
     /**

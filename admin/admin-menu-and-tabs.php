@@ -37,6 +37,7 @@ class Disciple_Tools_Plugin_Starter_Template_Menu {
 
         add_action( "admin_menu", array( $this, "register_menu" ) );
 
+        $this->page_title = __( "Plugin Starter Template", 'disciple-tools-plugin-starter-template' );
     } // End __construct()
 
 
@@ -45,6 +46,8 @@ class Disciple_Tools_Plugin_Starter_Template_Menu {
      * @since 0.1
      */
     public function register_menu() {
+        $this->page_title = __( "Plugin Starter Template", 'disciple-tools-plugin-starter-template' );
+
         add_submenu_page( 'dt_extensions', $this->page_title, $this->page_title, 'manage_dt', $this->token, [ $this, 'content' ] );
     }
 

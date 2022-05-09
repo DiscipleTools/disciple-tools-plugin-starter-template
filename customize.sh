@@ -1,10 +1,10 @@
 #!/bin/bash
 
-plugin_name="My Awesome Plugin"
-plugin_class="My_Awesome_Plugin"
-plugin_function="my_awesome_plugin"
-plugin_path="my-awesome-plugin"
-plugin_post_type="awesome_plugin"
+plugin_name="Plugin Starter Template"
+plugin_class="Disciple_Tools_Plugin_Starter_Template"
+plugin_function="disciple_tools_plugin_starter_template"
+plugin_path="disciple-tools-plugin-starter-template"
+plugin_post_type="starter_post_type"
 
 echo -e "\nReplacing string 'Plugin Starter Template'... for '$plugin_name'."
 grep -rl --exclude-dir=*.git "Plugin Starter Template" | grep -Ev customize.sh | LANG=C xargs sed -i '' "s/Plugin Starter Template/${plugin_name}/g"

@@ -25,7 +25,7 @@ grep -rl --exclude-dir=*.git "starter_post_type" | grep -Ev customize.sh | LANG=
 echo -e "\nMoving disciple-tools-plugin-starter-template.php to '$plugin_path.php'"
 mv disciple-tools-plugin-starter-template.php "$plugin_path.php"
 
-echo -e "\nAll replacements done. Destroying this script since it can be harmful if you re-run it."
+echo -e "\nAll replacements done. Destroying this script since it can be harmful to re-run it."
 rm customize.sh
 
 echo -e "\nThanks for choosing Disciple.Tools!"

@@ -9,6 +9,12 @@ services:
 cache:
   directories:
     - $HOME/.composer/cache/files
+  media_placeholder
+matrix:
+  include:
+    - php: 8.0
+    - php: 7.4
+      env: WP_VERSION=latest
 before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS testdb'
   - mysql -e "GRANT ALL ON testdb.* TO 'travis'@'localhost'"

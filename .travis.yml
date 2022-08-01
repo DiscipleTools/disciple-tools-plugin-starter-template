@@ -7,7 +7,6 @@ services:
 cache:
   directories:
     - $HOME/.composer/cache/files
-  media_placeholder
 matrix:
   include:
     - php: 8.0

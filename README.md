@@ -1,5 +1,4 @@
-[![Build Status](https://travis-ci.com/DiscipleTools/disciple-tools-plugin-starter-template.svg?branch=master)](https://travis-ci.com/DiscipleTools/disciple-tools-plugin-starter-template)
-
+![Build Status](https://github.com/DiscipleTools/disciple-tools-plugin-starter-template/actions/workflows/ci.yml/badge.svg?branch=master)
 ## Dev notes, delete me:
 This is a starter plugin to jumpstart your work with Disciple.Tools.
 Click the "Use this template" button above.

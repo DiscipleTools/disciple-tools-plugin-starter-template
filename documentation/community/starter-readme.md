@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/DiscipleTools/disciple-tools-plugin-starter-template.svg?branch=master)](https://travis-ci.com/DiscipleTools/disciple-tools-plugin-starter-template)
+![Build Status](https://github.com/DiscipleTools/disciple-tools-plugin-starter-template/actions/workflows/ci.yml/badge.svg?branch=master)
 
 # Disciple.Tools - Plugin Starter Template
 
@@ -18,7 +18,7 @@ Instead of waiting for us, you can run ahead on your own. This
 plugin includes all our best practices and starter codes for the most commonly developed extensions.
 
 We have included starter code for a new post-type, a new REST API endpoint, a new admin page, or a new metrics chart.
-The template also provides code quality and code style tools, Travis-CI integration, multi-language support, activation and
+The template also provides code quality and code style tools, Github Actions integration, multi-language support, activation and
 deactivation functions, and more. In truth it's likely more than your project needs, so we'll
 guide you through removing the elements your project does not need.)
 
@@ -29,7 +29,7 @@ __This plugin is for developers__ who want to extend the Disciple.Tools system f
 
  1. Wordpress code style requirements. ```phpcs.xml```
  1. PHP Code Sniffer support (composer) @use ```/vendor/bin/phpcs``` and ```/vendor/bin/phpcbf```
- 1. Travis Continuous Integration ([travis-ci.com](https://travis-ci.com)). ```travis.yml```
+ 1. Github Actions Continuous Integration ```.githbub/workflows/ci.yml```
  1. Disciple.Tools Theme presence check. ```disciple_tools_plugin_starter_template()```
  1. Remote upgrade system for ongoing updates outside the Wordpress Directory.
  1. Multilingual support. ```/languages``` & ```default.pot```

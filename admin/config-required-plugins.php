@@ -38,22 +38,22 @@ add_action( 'tgmpa_register', function() {
      * Array of plugin arrays. Required keys are name and slug.
      * If the source is NOT from the .org repo, then source is also required.
      */
-    $plugins = [
-        [
-            'name'                  => 'iThemes Security',
-            'slug'                  => 'better-wp-security',
-            'required'              => false,
-            'version'               => '7.2.0',
-        ]
-    ];
-    if ( is_multisite() ){
-        $plugins[] = [
-            'name' => 'Disciple.Tools Multisite Helper',
-            'slug' => 'disciple-tools-multisite',
-            'source' => 'https://github.com/DiscipleTools/disciple-tools-multisite/releases/latest/download/disciple-tools-multisite.zip',
-            'required' => false
-        ];
-    }
+    $plugins = [];
+    // a wordpress plugin:
+    //    $plugins[] = [
+    //            'name'                  => 'iThemes Security',
+    //            'slug'                  => 'better-wp-security',
+    //            'required'              => false,
+    //            'version'               => '7.2.0',
+    //    ];
+
+    // a D.T plugin
+    //    $plugins[] = [
+    //        'name' => 'Disciple.Tools Dashboard',
+    //        'slug' => 'disciple-tools-dashboard',
+    //        'source' => 'https://github.com/DiscipleTools/disciple-tools-dashboard/releases/latest/download/disciple-tools-dashboard.zip',
+    //        'required' => false
+    //    ];
 
     /*
      * Array of configuration settings. Amend each line as needed.

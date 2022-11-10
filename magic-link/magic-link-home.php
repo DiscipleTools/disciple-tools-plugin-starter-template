@@ -88,7 +88,7 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Home_App extends DT_Magic_Url
 
     public function body(){
         ?>
-        <div id="content" style="">Insert You Home Page Here</div>
+        <div id="content" style="">Insert Your Home Page Here</div>
         <?php
     }
 }

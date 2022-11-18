@@ -54,7 +54,7 @@ class Disciple_Tools_Plugin_Starter_Template_Base extends DT_Module_Base {
         add_action( 'dt_comment_created', [ $this, 'dt_comment_created' ], 10, 4 );
 
         //list
-        add_filter( 'dt_user_list_filters', [ $this, 'dt_user_list_filters' ], 10, 2 );
+        add_filter( 'dt_user_list_filters', [ $this, 'dt_user_list_filters' ], 150, 2 );
         add_filter( 'dt_filter_access_permissions', [ $this, 'dt_filter_access_permissions' ], 20, 2 );
 
     }
@@ -599,22 +599,16 @@ class Disciple_Tools_Plugin_Starter_Template_Base extends DT_Module_Base {
                         dt_increment( $active_counts[$count['status']], $count['count'] );
                     }
                 }
-                $filters['tabs'][] = [
-                    'key' => 'all',
-                    'label' => __( 'All', 'disciple-tools-plugin-starter-template' ),
-                    'count' => $total_all,
-                    'order' => 10
-                ];
-                // add assigned to me filters
-                $filters['filters'][] = [
-                    'ID' => 'all',
-                    'tab' => 'all',
-                    'name' => __( 'All', 'disciple-tools-plugin-starter-template' ),
-                    'query' => [
-                        'sort' => '-post_date'
-                    ],
-                    'count' => $total_all
-                ];
+                foreach ( $filters['tabs'] as &$filter_tab ){
+                    if ( $filter_tab['key'] === 'all' ){
+                        $filter_tab['count'] = $total_all;
+                    }
+                }
+                foreach ( $filters['filters'] as &$filter_item ){
+                    if ( $filter_item['ID'] === 'all' ){
+                        $filter_item['count'] = $total_all;
+                    }
+                }
 
                 foreach ( $fields['status']['default'] as $status_key => $status_value ) {
                     if ( isset( $status_counts[$status_key] ) ){

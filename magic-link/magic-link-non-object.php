@@ -178,6 +178,7 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Non_Object_App extends DT_Mag
                 [
                     'methods'  => WP_REST_Server::CREATABLE,
                     'callback' => [ $this, 'endpoint' ],
+                    'permission_callback' => '__return_true',
                 ],
             ]
         );

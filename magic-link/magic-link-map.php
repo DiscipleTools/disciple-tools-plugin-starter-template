@@ -244,6 +244,7 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Map_App extends DT_Magic_Url_
                 [
                     'methods'  => WP_REST_Server::CREATABLE,
                     'callback' => [ $this, 'endpoint' ],
+                    'permission_callback' => '__return_true',
                 ],
             ]
         );

@@ -453,57 +453,34 @@ class Disciple_Tools_Plugin_Starter_Template_Base extends DT_Module_Base {
      * Documentation
      * @link https://github.com/DiscipleTools/Documentation/blob/master/Theme-Core/list-query.md
      */
-    private static function get_my_status(){
-        /**
-         * @todo adjust query to return count for update needed
-         */
+    private static function count_records_assigned_to_me_by_status(){
         global $wpdb;
         $post_type = self::post_type();
         $current_user = get_current_user_id();
 
         $results = $wpdb->get_results( $wpdb->prepare( "
-            SELECT status.meta_value as status, count(pm.post_id) as count, count(un.post_id) as update_needed
+            SELECT status.meta_value as status, count(pm.post_id) as count
             FROM $wpdb->postmeta pm
             INNER JOIN $wpdb->posts a ON( a.ID = pm.post_id AND a.post_type = %s and a.post_status = 'publish' )
             INNER JOIN $wpdb->postmeta status ON ( status.post_id = pm.post_id AND status.meta_key = 'status' )
-            INNER JOIN $wpdb->postmeta as assigned_to ON a.ID=assigned_to.post_id
-              AND assigned_to.meta_key = 'assigned_to'
-              AND assigned_to.meta_value = CONCAT( 'user-', %s )
-            LEFT JOIN $wpdb->postmeta un ON ( un.post_id = pm.post_id AND un.meta_key = 'requires_update' AND un.meta_value = '1' )
-            GROUP BY status.meta_value, pm.meta_value
+            WHERE pm.meta_key = 'assigned_to'
+            AND pm.meta_value = CONCAT( 'user-', %s )
+            GROUP BY status.meta_value
         ", $post_type, $current_user ), ARRAY_A);
 
         return $results;
     }
 
     //list page filters function
-    private static function get_all_status_types(){
-        /**
-         * @todo adjust query to return count for update needed
-         */
+    private static function count_records_by_status(){
         global $wpdb;
-        if ( current_user_can( 'view_any_'.self::post_type() ) ){
-            $results = $wpdb->get_results($wpdb->prepare( "
-                SELECT status.meta_value as status, count(status.post_id) as count, count(un.post_id) as update_needed
-                FROM $wpdb->postmeta status
-                INNER JOIN $wpdb->posts a ON( a.ID = status.post_id AND a.post_type = %s and a.post_status = 'publish' )
-                LEFT JOIN $wpdb->postmeta un ON ( un.post_id = status.post_id AND un.meta_key = 'requires_update' AND un.meta_value = '1' )
-                WHERE status.meta_key = 'status'
-                GROUP BY status.meta_value
-            ", self::post_type() ), ARRAY_A );
-        } else {
-            $results = $wpdb->get_results($wpdb->prepare("
-                SELECT status.meta_value as status, count(pm.post_id) as count, count(un.post_id) as update_needed
-                FROM $wpdb->postmeta pm
-                INNER JOIN $wpdb->postmeta status ON( status.post_id = pm.post_id AND status.meta_key = 'status' )
-                INNER JOIN $wpdb->posts a ON( a.ID = pm.post_id AND a.post_type = %s and a.post_status = 'publish' )
-                LEFT JOIN $wpdb->dt_share AS shares ON ( shares.post_id = a.ID AND shares.user_id = %s )
-                LEFT JOIN $wpdb->postmeta assigned_to ON ( assigned_to.post_id = pm.post_id AND assigned_to.meta_key = 'assigned_to' && assigned_to.meta_value = %s )
-                LEFT JOIN $wpdb->postmeta un ON ( un.post_id = pm.post_id AND un.meta_key = 'requires_update' AND un.meta_value = '1' )
-                WHERE ( shares.user_id IS NOT NULL OR assigned_to.meta_value IS NOT NULL )
-                GROUP BY status.meta_value, pm.meta_value
-            ", self::post_type(), get_current_user_id(), 'user-' . get_current_user_id() ), ARRAY_A);
-        }
+        $results = $wpdb->get_results($wpdb->prepare( "
+            SELECT status.meta_value as status, count(status.post_id) as count
+            FROM $wpdb->postmeta status
+            INNER JOIN $wpdb->posts a ON( a.ID = status.post_id AND a.post_type = %s and a.post_status = 'publish' )
+            WHERE status.meta_key = 'status'
+            GROUP BY status.meta_value
+        ", self::post_type() ), ARRAY_A );
 
         return $results;
     }
@@ -514,26 +491,20 @@ class Disciple_Tools_Plugin_Starter_Template_Base extends DT_Module_Base {
          * @todo process and build filter lists
          */
         if ( $post_type === self::post_type() ){
-            $counts = self::get_my_status();
+            $records_assigned_to_me_by_status_counts = self::count_records_assigned_to_me_by_status();
             $fields = DT_Posts::get_post_field_settings( $post_type );
             /**
              * Setup my filters
              */
             $active_counts = [];
-            $update_needed = 0;
             $status_counts = [];
             $total_my = 0;
-            foreach ( $counts as $count ){
+            foreach ( $records_assigned_to_me_by_status_counts as $count ){
                 $total_my += $count['count'];
                 dt_increment( $status_counts[$count['status']], $count['count'] );
-                if ( $count['status'] === 'active' ){
-                    if ( isset( $count['update_needed'] ) ) {
-                        $update_needed += (int) $count['update_needed'];
-                    }
-                    dt_increment( $active_counts[$count['status']], $count['count'] );
-                }
             }
 
+            // add assigned to me tab
             $filters['tabs'][] = [
                 'key' => 'assigned_to_me',
                 'label' => __( 'Assigned to me', 'disciple-tools-plugin-starter-template' ),
@@ -551,6 +522,7 @@ class Disciple_Tools_Plugin_Starter_Template_Base extends DT_Module_Base {
                 ],
                 'count' => $total_my,
             ];
+            //add a filter for each status
             foreach ( $fields['status']['default'] as $status_key => $status_value ) {
                 if ( isset( $status_counts[$status_key] ) ){
                     $filters['filters'][] = [
@@ -564,51 +536,29 @@ class Disciple_Tools_Plugin_Starter_Template_Base extends DT_Module_Base {
                         ],
                         'count' => $status_counts[$status_key]
                     ];
-                    if ( $status_key === 'active' ){
-                        if ( $update_needed > 0 ){
-                            $filters['filters'][] = [
-                                'ID' => 'my_update_needed',
-                                'tab' => 'assigned_to_me',
-                                'name' => $fields['requires_update']['name'],
-                                'query' => [
-                                    'assigned_to' => [ 'me' ],
-                                    'status' => [ 'active' ],
-                                    'requires_update' => [ true ],
-                                ],
-                                'count' => $update_needed,
-                                'subfilter' => true
-                            ];
-                        }
-                    }
                 }
             }
 
-            if ( current_user_can( 'view_any_' . self::post_type() ) ){
-                $counts = self::get_all_status_types();
-                $active_counts = [];
-                $update_needed = 0;
+            if ( DT_Posts::can_view_all( self::post_type() ) ){
+                $records_by_status_counts = self::count_records_by_status();
                 $status_counts = [];
                 $total_all = 0;
-                foreach ( $counts as $count ){
+                foreach ( $records_by_status_counts as $count ){
                     $total_all += $count['count'];
                     dt_increment( $status_counts[$count['status']], $count['count'] );
-                    if ( $count['status'] === 'active' ){
-                        if ( isset( $count['update_needed'] ) ) {
-                            $update_needed += (int) $count['update_needed'];
-                        }
-                        dt_increment( $active_counts[$count['status']], $count['count'] );
-                    }
                 }
+
+                // add by Status Tab
                 $filters['tabs'][] = [
-                    'key' => 'all',
-                    'label' => __( 'All', 'disciple-tools-plugin-starter-template' ),
+                    'key' => 'by_status',
+                    'label' => __( 'All By Status', 'disciple-tools-plugin-starter-template' ),
                     'count' => $total_all,
-                    'order' => 10
+                    'order' => 30
                 ];
                 // add assigned to me filters
                 $filters['filters'][] = [
                     'ID' => 'all',
-                    'tab' => 'all',
+                    'tab' => 'by_status',
                     'name' => __( 'All', 'disciple-tools-plugin-starter-template' ),
                     'query' => [
                         'sort' => '-post_date'
@@ -620,7 +570,7 @@ class Disciple_Tools_Plugin_Starter_Template_Base extends DT_Module_Base {
                     if ( isset( $status_counts[$status_key] ) ){
                         $filters['filters'][] = [
                             'ID' => 'all_' . $status_key,
-                            'tab' => 'all',
+                            'tab' => 'by_status',
                             'name' => $status_value['label'],
                             'query' => [
                                 'status' => [ $status_key ],
@@ -628,36 +578,6 @@ class Disciple_Tools_Plugin_Starter_Template_Base extends DT_Module_Base {
                             ],
                             'count' => $status_counts[$status_key]
                         ];
-                        if ( $status_key === 'active' ){
-                            if ( $update_needed > 0 ){
-                                $filters['filters'][] = [
-                                    'ID' => 'all_update_needed',
-                                    'tab' => 'all',
-                                    'name' => $fields['requires_update']['name'],
-                                    'query' => [
-                                        'status' => [ 'active' ],
-                                        'requires_update' => [ true ],
-                                    ],
-                                    'count' => $update_needed,
-                                    'subfilter' => true
-                                ];
-                            }
-//                        foreach ( $fields["type"]["default"] as $type_key => $type_value ) {
-//                            if ( isset( $active_counts[$type_key] ) ) {
-//                                $filters["filters"][] = [
-//                                    "ID" => 'all_' . $type_key,
-//                                    "tab" => 'all',
-//                                    "name" => $type_value["label"],
-//                                    "query" => [
-//                                        'status' => [ 'active' ],
-//                                        'sort' => 'name'
-//                                    ],
-//                                    "count" => $active_counts[$type_key],
-//                                    'subfilter' => true
-//                                ];
-//                            }
-//                        }
-                        }
                     }
                 }
             }

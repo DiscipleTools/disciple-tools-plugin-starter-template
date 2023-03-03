@@ -252,6 +252,18 @@ class Disciple_Tools_Plugin_Starter_Template_Tile
                 'tile' => 'a_beautiful_tile',
                 'private'   => true
             ];
+
+            $fields['links_test'] = [
+                'name' => 'Links',
+                'type' => 'link',
+                'default' => [
+                    'default' => [ 'label' => 'Default', ],
+                    'one' => [ 'label' => 'option 1' ],
+                    'two' => [ 'label' => 'option 2' ],
+                    'three' => [ 'label' => 'option 3' ],
+                ],
+                'tile' => 'a_beautiful_tile',
+            ];
         }
         return $fields;
     }

@@ -137,25 +137,52 @@ class Disciple_Tools_Plugin_Starter_Template_Tab_General {
     }
 
     public function main_column() {
+        $token = Disciple_Tools_Plugin_Starter_Template_Menu::instance()->token;
+        $this->process_form_fields( $token );
+
+        $my_plugin_option = get_option( $token . '_my_plugin_option' );
         ?>
-        <!-- Box -->
-        <table class="widefat striped">
-            <thead>
+        <form method="post">
+            <?php wp_nonce_field( 'dt_admin_form', 'dt_admin_form_nonce' ) ?>
+            <table class="widefat striped">
+                <thead>
                 <tr>
-                    <th>Header</th>
+                    <th>Settings</th>
+                    <th></th>
                 </tr>
-            </thead>
-            <tbody>
+                </thead>
+                <tbody>
                 <tr>
                     <td>
-                        Content
+                        My Plugin Option
+                    </td>
+                    <td>
+                        <input type="text" name="my-plugin-option" placeholder="" value="<?php echo esc_attr( $my_plugin_option ) ?>">
                     </td>
                 </tr>
-            </tbody>
-        </table>
+                <tr>
+                    <td>
+                        <button class="button">Save</button>
+                    </td>
+                    <td></td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
         <br>
-        <!-- End Box -->
         <?php
+    }
+
+    public function process_form_fields( $token ){
+        if ( isset( $_POST['dt_admin_form_nonce'] ) &&
+            wp_verify_nonce( sanitize_key( wp_unslash( $_POST['dt_admin_form_nonce'] ) ), 'dt_admin_form' ) ) {
+
+            $post_vars = dt_recursive_sanitize_array( $_POST );
+
+            if ( isset( $post_vars['my-plugin-option'] ) ) {
+                update_option( $token . '_my_plugin_option', $post_vars['my-plugin-option'] );
+            }
+        }
     }
 
     public function right_column() {
@@ -218,16 +245,16 @@ class Disciple_Tools_Plugin_Starter_Template_Tab_Second {
         <!-- Box -->
         <table class="widefat striped">
             <thead>
-                <tr>
-                    <th>Header</th>
-                </tr>
+            <tr>
+                <th>Header</th>
+            </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>
-                        Content
-                    </td>
-                </tr>
+            <tr>
+                <td>
+                    Content
+                </td>
+            </tr>
             </tbody>
         </table>
         <br>

@@ -129,7 +129,7 @@ class Disciple_Tools_Plugin_Starter_Template {
          */
         require_once( 'tile/custom-tile.php' ); // add custom tile
         if ( 'settings' === dt_get_url_path() && ! $is_rest ) {
-            require_once( 'tile/settings-tile.php' ); // add custom settings page tile
+            require_once( 'tile/profile-settings-tile.php' ); // add custom settings page tile
         }
 
         /**

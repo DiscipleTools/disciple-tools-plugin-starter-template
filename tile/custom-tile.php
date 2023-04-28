@@ -190,7 +190,7 @@ class Disciple_Tools_Plugin_Starter_Template_Tile
                 'private'   => true
             ];
             $fields['multi_select_test'] = [
-                'name' => 'Random Options',
+                'name' => 'Random Options Multiselect',
                 'type' => 'multi_select',
                 'default' => [
                     'one' => [ 'label' => 'option 1' ],
@@ -200,7 +200,7 @@ class Disciple_Tools_Plugin_Starter_Template_Tile
                 'tile' => 'a_beautiful_tile',
             ];
             $fields['multi_select_test_private'] = [
-                'name' => 'Random Options',
+                'name' => 'Random Private Options',
                 'type' => 'multi_select',
                 'default' => [
                     'one_private' => [ 'label' => 'option 1' ],
@@ -211,7 +211,7 @@ class Disciple_Tools_Plugin_Starter_Template_Tile
                 'private'   => true
             ];
             $fields['key_select_test'] = [
-                'name' => 'Random Options',
+                'name' => 'Random Options Key Select',
                 'type' => 'key_select',
                 'default' => [
                     'one' => [ 'label' => 'option 1' ],
@@ -221,7 +221,7 @@ class Disciple_Tools_Plugin_Starter_Template_Tile
                 'tile' => 'a_beautiful_tile',
             ];
             $fields['key_select_test_private'] = [
-                'name' => 'Random Options',
+                'name' => 'Random Private Key Select Options',
                 'type' => 'key_select',
                 'default' => [
                     'one_private' => [ 'label' => 'option 1' ],

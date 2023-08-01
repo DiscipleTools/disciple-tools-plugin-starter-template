@@ -89,12 +89,15 @@ class Disciple_Tools_Plugin_Starter_Template_Base extends DT_Module_Base {
      */
     public function dt_set_roles_and_permissions( $expected_roles ){
 
-        if ( !isset( $expected_roles['multiplier'] ) ){
-            $expected_roles['multiplier'] = [
+        if ( !isset( $expected_roles['my_starter_role'] ) ){
+            $expected_roles['my_starter_role'] = [
 
-                'label' => __( 'Multiplier', 'disciple-tools-plugin-starter-template' ),
-                'description' => 'Interacts with Contacts and Groups',
-                'permissions' => []
+                'label' => __( 'My Starter Role', 'disciple-tools-plugin-starter-template' ),
+                'description' => 'Does something Cool',
+                'permissions' => [
+                    'access_contacts' => true,
+                    // @todo more capabilities
+                ]
             ];
         }
 
@@ -107,13 +110,14 @@ class Disciple_Tools_Plugin_Starter_Template_Base extends DT_Module_Base {
             }
         }
 
-        if ( isset( $expected_roles['administrator'] ) ){
-            $expected_roles['administrator']['permissions']['view_any_'.$this->post_type ] = true;
-            $expected_roles['administrator']['permissions']['update_any_'.$this->post_type ] = true;
-        }
         if ( isset( $expected_roles['dt_admin'] ) ){
             $expected_roles['dt_admin']['permissions']['view_any_'.$this->post_type ] = true;
             $expected_roles['dt_admin']['permissions']['update_any_'.$this->post_type ] = true;
+        }
+        if ( isset( $expected_roles['administrator'] ) ){
+            $expected_roles['administrator']['permissions']['view_any_'.$this->post_type ] = true;
+            $expected_roles['administrator']['permissions']['update_any_'.$this->post_type ] = true;
+            $expected_roles['administrator']['permissions']['delete_any_'.$this->post_type ] = true;
         }
 
         return $expected_roles;

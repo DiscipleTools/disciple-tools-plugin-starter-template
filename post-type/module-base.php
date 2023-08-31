@@ -561,7 +561,7 @@ class Disciple_Tools_Plugin_Starter_Template_Base extends DT_Module_Base {
                 ];
                 // add assigned to me filters
                 $filters['filters'][] = [
-                    'ID' => 'all',
+                    'ID' => 'all_status',
                     'tab' => 'by_status',
                     'name' => __( 'All', 'disciple-tools-plugin-starter-template' ),
                     'query' => [

@@ -261,7 +261,7 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Login_User_App extends DT_Mag
         $user_contact = Disciple_Tools_Users::get_contact_for_user( $user_id );
 
         // We also know who owns this user app
-        $app_owner_id =  $this->parts['post_id'];
+        $app_owner_id = $this->parts['post_id'];
         $app_owner = get_user_by( 'ID', $app_owner_id );
         $app_owner_display_name = dt_get_user_display_name( $app_owner_id );
 
@@ -376,4 +376,4 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Login_User_App extends DT_Mag
         return $data;
     }
 }
-Disciple_Tools_Plugin_Starter_Template_Magic_Login_User_App ::instance();
+Disciple_Tools_Plugin_Starter_Template_Magic_Login_User_App::instance();

@@ -77,7 +77,7 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Login_User_App extends DT_Mag
 
         if ( !is_user_logged_in() ) {
             /* redirect user to login page with a redirect_to back to here */
-            wp_redirect( dt_login_url( 'login', '?redirect_to=' . rawurlencode( site_url( dt_get_url_path() ) ) ) );
+            wp_redirect( dt_login_url( 'login', '?redirect_to=' . rawurlencode( site_url( dt_get_url_path() ) ) . '&hide-nav' ) );
             exit;
         }
 

@@ -135,6 +135,17 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Login_User_App extends DT_Mag
                 background-color: white;
                 padding: 1em;
             }
+
+            .app-container {
+                display: flex;
+                flex-wrap: wrap;
+            }
+            .app {
+                padding: 1em;
+                margin: 1em;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
         </style>
         <?php
     }
@@ -266,6 +277,7 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Login_User_App extends DT_Mag
         $app_owner_display_name = dt_get_user_display_name( $app_owner_id );
 
         // @todo Create an app here that interacts with both the logged in user and the user who owns the app
+        $apps_list = apply_filters( 'dt_settings_apps_list', $apps_list = [] );
 
         ?>
         <div id="custom-style"></div>
@@ -277,7 +289,29 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Login_User_App extends DT_Mag
             </div>
             <hr>
             <div id="content">
-                <h3>This app belongs to <?php echo esc_html( $app_owner_display_name ) ?></h3>
+                <h3>Your Apps</h3>
+                <div class="app-container">
+                    <?php
+                    foreach ( $apps_list as $app ) {
+                        if ( $app['settings_display'] ){
+                            $app_user_key = get_user_option( $app['key'] );
+                            $app_url_base = trailingslashit( trailingslashit( site_url() ) . $app['url_base'] );
+                            if ( !$app_user_key ){
+                                continue;
+                            }
+                            $app_link = $app_url_base . $app_user_key;
+                            ?>
+                            <a class="app" target="_blank" href="<?php echo esc_url( $app_link ) ?>"><?php echo esc_html( $app['label'] ) ?></a>
+                            <?php
+                        }
+                    }
+                    ?>
+                </div>
+
+                <br>
+                <br>
+                <br>
+                <h3>API</h3>
                 <div class="grid-x" id="api-content">
                     <!-- javascript container -->
                     <span class="loading-spinner active"></span>

@@ -68,10 +68,11 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Login_User_App extends DT_Mag
         if ( strpos( $url, $this->root . '/' . $this->type ) === false ) {
             return;
         }
+
         /**
          * tests magic link parts are registered and have valid elements
          */
-        if ( !$this->check_parts_match() ){
+        if ( !$this->check_parts_match( false ) ){
             return;
         }
 
@@ -174,7 +175,6 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Login_User_App extends DT_Mag
         ?>
         <script>
             console.log('insert footer_javascript')
-
             let jsObject = [<?php echo json_encode([
                 'map_key' => DT_Mapbox_API::get_key(),
                 'root' => esc_url_raw( rest_url() ),
@@ -183,80 +183,9 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Login_User_App extends DT_Mag
                 'translations' => [
                     'add' => __( 'Add Magic', 'disciple-tools-plugin-starter-template' ),
                 ],
-            ]) ?>][0]
+            ]) ?>][0];
 
-            window.get_magic = () => {
-                jQuery.ajax({
-                    type: "GET",
-                    data: { action: 'get', parts: jsObject.parts },
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    url: jsObject.root + jsObject.parts.root + '/v1/' + jsObject.parts.type,
-                    beforeSend: function (xhr) {
-                        xhr.setRequestHeader('X-WP-Nonce', jsObject.nonce )
-                    }
-                })
-                    .done(function(data){
-                        window.load_magic( data )
-                    })
-                    .fail(function(e) {
-                        console.log(e)
-                        jQuery('#error').html(e)
-                    })
-            }
-
-            window.load_magic = ( data ) => {
-                let content = jQuery('#api-content')
-                let spinner = jQuery('.loading-spinner')
-
-                content.empty()
-                let html = ``
-                data.forEach(v=>{
-                    html += `
-                         <div class="cell">
-                             ${window.lodash.escape(v.name)}
-                         </div>
-                     `
-                })
-                content.html(html)
-
-                spinner.removeClass('active')
-
-            }
-
-            window.get_magic()
-
-
-            $('.dt_date_picker').datepicker({
-                constrainInput: false,
-                dateFormat: 'yy-mm-dd',
-                changeMonth: true,
-                changeYear: true,
-                yearRange: "1900:2050",
-            }).each(function() {
-                if (this.value && moment.unix(this.value).isValid()) {
-                    this.value = window.SHAREDFUNCTIONS.formatDate(this.value);
-                }
-            })
-
-
-            $('#submit-form').on("click", function (){
-                $(this).addClass("loading")
-                let start_date = $('#start_date').val()
-                let comment = $('#comment-input').val()
-                let update = {
-                    start_date,
-                    comment
-                }
-
-                window.makeRequest( "POST", jsObject.parts.type, { parts: jsObject.parts, update }, jsObject.parts.root + '/v1/' ).done(function(data){
-                    window.location.reload()
-                })
-                    .fail(function(e) {
-                        console.log(e)
-                        jQuery('#error').html(e)
-                    })
-            })
+            console.log(jsObject);
         </script>
         <?php
         return true;
@@ -307,25 +236,7 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Login_User_App extends DT_Mag
                     }
                     ?>
                 </div>
-
-                <br>
-                <br>
-                <br>
-                <h3>API</h3>
-                <div class="grid-x" id="api-content">
-                    <!-- javascript container -->
-                    <span class="loading-spinner active"></span>
-                </div>
-
-                <br>
-                <br>
-                <br>
-                <h3>Form</h3>
-                <div class="grid-x" id="form-content">
-
-                </div>
             </div>
-
         </div>
         <?php
     }
@@ -365,49 +276,11 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Login_User_App extends DT_Mag
     }
 
     public function update_record( WP_REST_Request $request ) {
-        $params = $request->get_params();
-        $params = dt_recursive_sanitize_array( $params );
-
-        $post_id = $params['parts']['post_id']; //has been verified in verify_rest_endpoint_permissions_on_post()
-
-        $args = [];
-        if ( !is_user_logged_in() ){
-            $args['comment_author'] = 'Magic Link Submission';
-            wp_set_current_user( 0 );
-            $current_user = wp_get_current_user();
-            $current_user->add_cap( 'magic_link' );
-            $current_user->display_name = 'Magic Link Submission';
-        }
-
-        if ( isset( $params['update']['comment'] ) && !empty( $params['update']['comment'] ) ){
-            $update = DT_Posts::add_post_comment( $this->post_type, $post_id, $params['update']['comment'], 'comment', $args, false );
-            if ( is_wp_error( $update ) ){
-                return $update;
-            }
-        }
-
-        if ( isset( $params['update']['start_date'] ) && !empty( $params['update']['start_date'] ) ){
-            $update = DT_Posts::update_post( $this->post_type, $post_id, [ 'start_date' => $params['update']['start_date'] ], false, false );
-            if ( is_wp_error( $update ) ){
-                return $update;
-            }
-        }
-
         return true;
     }
 
     public function endpoint_get( WP_REST_Request $request ) {
-        $params = $request->get_params();
-        if ( ! isset( $params['parts'], $params['action'] ) ) {
-            return new WP_Error( __METHOD__, 'Missing parameters', [ 'status' => 400 ] );
-        }
-
-        $data = [];
-
-        $data[] = [ 'name' => 'List item' ]; // @todo remove example
-        $data[] = [ 'name' => 'List item' ]; // @todo remove example
-
-        return $data;
+        return [];
     }
 }
 Disciple_Tools_Plugin_Starter_Template_Magic_Login_User_App::instance();

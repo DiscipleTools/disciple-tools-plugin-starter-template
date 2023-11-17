@@ -338,11 +338,12 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Login_User_App extends DT_Mag
 
         $args = [];
         if ( !is_user_logged_in() ){
-            $args['comment_author'] = 'Magic Link Submission';
+            $global_name = apply_filters( 'dt_magic_link_global_name', __( 'Magic Link', 'disciple_tools' ) );
+            $args['comment_author'] = sprintf( __( '%s Submission', 'disciple_tools' ), $global_name );
             wp_set_current_user( 0 );
             $current_user = wp_get_current_user();
             $current_user->add_cap( 'magic_link' );
-            $current_user->display_name = 'Magic Link Submission';
+            $current_user->display_name = sprintf( __( '%s Submission', 'disciple_tools' ), $global_name );
         }
 
         if ( isset( $params['update']['comment'] ) && !empty( $params['update']['comment'] ) ){

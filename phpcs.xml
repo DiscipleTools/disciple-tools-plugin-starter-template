@@ -95,6 +95,7 @@
     <!-- <exclude name="Squiz.Commenting.FunctionComment.InvalidReturnVoid" /> -->
     <exclude name="Squiz.Commenting.FunctionComment.Missing" />
     <exclude name="Squiz.Commenting.FunctionComment.MissingParamComment" />
+    <exclude name="Squiz.Commenting.FunctionComment.MissingParamType" />
     <exclude name="Squiz.Commenting.FunctionComment.MissingParamName" />
     <exclude name="Squiz.Commenting.FunctionComment.MissingParamTag" />
     <exclude name="Squiz.Commenting.FunctionComment.ParamCommentFullStop" />

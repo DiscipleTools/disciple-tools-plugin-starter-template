@@ -8,7 +8,7 @@ In order to display the banner correctly on the Disciple.Tools Community Plugins
 
 ## readme format:
 
-![Plugin Banner](https://raw.githubusercontent.com/DiscipleTools/disciple-tools-plugin-starter-template/b30402d97895e3f911efcb47fb8f29ccd1eb92e5/documentation/banner.png)
+![Plugin Banner](https://raw.githubusercontent.com/DiscipleTools/disciple-tools-plugin-starter-template/master/documentation/banner.png)
 
 # Disciple.Tools - Plugin Starter Template
 

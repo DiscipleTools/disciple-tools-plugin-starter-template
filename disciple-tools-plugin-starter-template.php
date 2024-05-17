@@ -52,11 +52,11 @@ class Disciple_Tools_Plugin_Starter_Template {
     public static string $required_theme_version = '1.63';
     public string $version;
     public string $name;
-    public string $key;
+    public string $key = 'disciple-tools-plugin-starter-template'; // @todo change to your plugin key 'disciple-tools-plugin-starter-template
 
 
     public function register_plugin( $plugins ){
-        $plugins['disciple-tools-plugin-starter-template'] = [
+        $plugins[$this->key] = [
             'plugin_url' => trailingslashit( plugin_dir_url( __FILE__ ) ),
             'version' => $this->version,
             'name' => $this->name
@@ -65,10 +65,9 @@ class Disciple_Tools_Plugin_Starter_Template {
     }
 
     private function __construct() {
-        $plugin_data = get_file_data( __FILE__, [ 'Version' => 'Version', 'name' => 'Plugin Name', 'key' => 'Domain' ], false );
+        $plugin_data = get_file_data( __FILE__, [ 'Version' => 'Version', 'name' => 'Plugin Name' ], false );
         $this->version = $plugin_data['Version'] ?? '';
         $this->name = $plugin_data['name'] ?? '';
-        $this->key = $plugin_data['key'] ?? '';
         add_filter( 'dt_plugins', [ $this, 'register_plugin' ], 10, 1 );
 
         if ( version_compare( self::$required_theme_version, disciple_tools()->version, '>' ) ) {

@@ -212,29 +212,6 @@ class Disciple_Tools_Plugin_Starter_Template_Base extends DT_Module_Base {
                 'icon' => get_template_directory_uri() . '/dt-assets/images/languages.svg?v=2',
             ];
 
-
-            /**
-             * @todo this section adds location support to this post type. remove if not needed.
-             * location elements
-             */
-            $fields['location_grid'] = [
-                'name'        => __( 'Locations', 'disciple-tools-plugin-starter-template' ),
-                'description' => __( 'The general location where this contact is located.', 'disciple-tools-plugin-starter-template' ),
-                'type'        => 'location',
-                'mapbox'    => false,
-                'in_create_form' => true,
-                'tile' => 'details',
-                'icon' => get_template_directory_uri() . '/dt-assets/images/location.svg',
-            ];
-            $fields['location_grid_meta'] = [
-                'name'        => __( 'Locations', 'disciple-tools-plugin-starter-template' ), //system string does not need translation
-                'description' => __( 'The general location where this record is located.', 'disciple-tools-plugin-starter-template' ),
-                'type'        => 'location_meta',
-                'tile'      => 'details',
-                'mapbox'    => false,
-                'hidden' => true,
-                'icon' => get_template_directory_uri() . '/dt-assets/images/location.svg?v=2',
-            ];
             $fields['contact_address'] = [
                 'name' => __( 'Address', 'disciple-tools-plugin-starter-template' ),
                 'icon' => get_template_directory_uri() . '/dt-assets/images/house.svg',
@@ -247,10 +224,6 @@ class Disciple_Tools_Plugin_Starter_Template_Base extends DT_Module_Base {
                 $fields['contact_address']['custom_display'] = true;
                 $fields['contact_address']['mapbox'] = true;
                 unset( $fields['contact_address']['tile'] );
-                $fields['location_grid']['mapbox'] = true;
-                $fields['location_grid_meta']['mapbox'] = true;
-                $fields['location_grid']['hidden'] = true;
-                $fields['location_grid_meta']['hidden'] = false;
             }
             // end locations
 

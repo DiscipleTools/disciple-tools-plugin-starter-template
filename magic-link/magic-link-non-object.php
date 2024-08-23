@@ -203,6 +203,5 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Non_Object_App extends DT_Mag
                 return true;
         }
     }
-
 }
 Disciple_Tools_Plugin_Starter_Template_Magic_Non_Object_App::instance();

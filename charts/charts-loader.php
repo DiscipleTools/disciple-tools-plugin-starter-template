@@ -19,7 +19,6 @@ class Disciple_Tools_Plugin_Starter_Template_Charts
         /**
          * @todo add other charts like the pattern above here
          */
-
     } // End __construct
 }
 Disciple_Tools_Plugin_Starter_Template_Charts::instance();

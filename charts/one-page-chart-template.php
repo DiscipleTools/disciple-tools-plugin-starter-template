@@ -94,5 +94,4 @@ class Disciple_Tools_Plugin_Starter_Template_Chart_Template extends DT_Metrics_C
             return new WP_Error( __METHOD__, 'Missing parameters.' );
         }
     }
-
 }

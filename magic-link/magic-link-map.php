@@ -311,8 +311,5 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Map_App extends DT_Magic_Url_
             'features' => array()
         );
     }
-
-
-
 }
 Disciple_Tools_Plugin_Starter_Template_Magic_Map_App::instance();

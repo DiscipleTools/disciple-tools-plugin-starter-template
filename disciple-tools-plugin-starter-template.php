@@ -62,7 +62,6 @@ function disciple_tools_plugin_starter_template() {
     }
 
     return Disciple_Tools_Plugin_Starter_Template::instance();
-
 }
 add_action( 'after_setup_theme', 'disciple_tools_plugin_starter_template', 20 );
 
@@ -170,7 +169,6 @@ class Disciple_Tools_Plugin_Starter_Template {
          * To remove: delete the line below and remove the folder named /workflows
          */
         require_once( 'workflows/workflows.php' );
-
     }
 
     /**

@@ -38,4 +38,3 @@ class Disciple_Tools_Plugin_Starter_Template_Site_Links {
     }
 }
 Disciple_Tools_Plugin_Starter_Template_Site_Links::instance();
-

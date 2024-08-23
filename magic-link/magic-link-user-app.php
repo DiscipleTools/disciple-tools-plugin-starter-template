@@ -79,7 +79,6 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_User_App extends DT_Magic_Url
         add_action( 'dt_blank_body', [ $this, 'body' ] );
         add_filter( 'dt_magic_url_base_allowed_css', [ $this, 'dt_magic_url_base_allowed_css' ], 10, 1 );
         add_filter( 'dt_magic_url_base_allowed_js', [ $this, 'dt_magic_url_base_allowed_js' ], 10, 1 );
-
     }
 
     public function dt_magic_url_base_allowed_js( $allowed_js ) {

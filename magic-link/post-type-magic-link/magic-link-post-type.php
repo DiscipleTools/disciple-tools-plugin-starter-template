@@ -84,7 +84,6 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Link extends DT_Magic_Url_Bas
         add_filter( 'dt_magic_url_base_allowed_css', [ $this, 'dt_magic_url_base_allowed_css' ], 10, 1 );
         add_filter( 'dt_magic_url_base_allowed_js', [ $this, 'dt_magic_url_base_allowed_js' ], 10, 1 );
         add_action( 'wp_enqueue_scripts', [ $this, 'wp_enqueue_scripts' ], 100 );
-
     }
 
     public function wp_enqueue_scripts(){

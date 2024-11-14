@@ -41,6 +41,8 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Link extends DT_Magic_Url_Bas
          *                          If True, lookup field to be provided within plugin for contacts only searching.
          *                          If false, Dropdown option to be provided for user, team or group selection.
          *      - fields:       List of fields to be displayed within magic link frontend form.
+         *      - icon:         Custom font icon to be associated with magic link.
+         *      - show_in_home_apps:    Boolean flag indicating if magic link should be automatically loaded and shown within Home Screen Plugin.
          */
         $this->meta = [
             'app_type'      => 'magic_link',
@@ -51,7 +53,9 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Link extends DT_Magic_Url_Bas
                     'id'    => 'name',
                     'label' => 'Name'
                 ]
-            ]
+            ],
+            'icon'           => 'mdi mdi-cog-outline',
+            'show_in_home_apps' => false
         ];
 
         $this->meta_key = $this->root . '_' . $this->type . '_magic_key';

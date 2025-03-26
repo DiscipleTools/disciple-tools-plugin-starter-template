@@ -41,23 +41,9 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Non_Object_App extends DT_Mag
 
 
             // register url and access
-            add_action( 'template_redirect', [ $this, 'theme_redirect' ] );
-            add_filter( 'dt_blank_access', function (){ return true;
-            }, 100, 1 );
-            add_filter( 'dt_allow_non_login_access', function (){ return true;
-            }, 100, 1 );
-            add_filter( 'dt_override_header_meta', function (){ return true;
-            }, 100, 1 );
-
-            // header content
-            add_filter( 'dt_blank_title', [ $this, 'page_tab_title' ] ); // adds basic title to browser tab
-            add_action( 'wp_print_scripts', [ $this, 'print_scripts' ], 1500 ); // authorizes scripts
-            add_action( 'wp_print_styles', [ $this, 'print_styles' ], 1500 ); // authorizes styles
-
+            add_filter( 'dt_override_header_meta', '__return_true', 100, 1 );
 
             // page content
-            add_action( 'dt_blank_head', [ $this, '_header' ] );
-            add_action( 'dt_blank_footer', [ $this, '_footer' ] );
             add_action( 'dt_blank_body', [ $this, 'body' ] ); // body for no post key
 
             add_filter( 'dt_magic_url_base_allowed_css', [ $this, 'dt_magic_url_base_allowed_css' ], 10, 1 );
@@ -67,7 +53,6 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Non_Object_App extends DT_Mag
 
         if ( dt_is_rest() ) {
             add_action( 'rest_api_init', [ $this, 'add_endpoints' ] );
-            add_filter( 'dt_allow_rest_access', [ $this, 'authorize_url' ], 10, 1 );
         }
     }
 
@@ -162,7 +147,7 @@ class Disciple_Tools_Plugin_Starter_Template_Magic_Non_Object_App extends DT_Mag
         return true;
     }
 
-    public static function _wp_enqueue_scripts(){
+    public function _wp_enqueue_scripts(){
     }
 
     /**

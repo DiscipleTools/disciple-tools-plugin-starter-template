@@ -343,9 +343,11 @@ class Disciple_Tools_Magic_Links_Template_Starter_Template extends DT_Magic_Url_
 
         $updates = [];
 
+        //todo: handle all input fields
+        /*
         foreach ( $params['fields']['dt'] ?? [] as $field ) {
-            //todo: handle all input fields
         }
+        */
 
         // Update specified post record
         if ( empty( $params['post_id'] ) ) {

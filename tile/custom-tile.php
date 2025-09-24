@@ -29,7 +29,19 @@ class Disciple_Tools_Plugin_Starter_Template_Tile
      */
     public function dt_details_additional_tiles( $tiles, $post_type = '' ) {
         if ( $post_type === 'contacts' || $post_type === 'starter_post_type' ){
-            $tiles['disciple_tools_plugin_starter_template'] = [ 'label' => __( 'Plugin Starter Template', 'disciple-tools-plugin-starter-template' ) ];
+            $tiles['disciple_tools_plugin_starter_template'] = [
+                'label' => __( 'Plugin Starter Template', 'disciple-tools-plugin-starter-template' ),
+                'description' => __( 'This is a tile that is added by the plugin starter template.', 'disciple-tools-plugin-starter-template' ),
+                'hidden' => false,
+                'display_conditions' => [
+                    'visibility' => 'visible', //hidden, custom, visible
+                    'operator' => 'or', //and, or
+                    'conditions' => [
+                        //field type options: tags, key_select, multi_select
+                        'active_status' => [ 'key' => 'overall_status', 'value' => 'active' ]
+                    ],
+                ],
+            ];
             $tiles['a_beautiful_tile'] = [ 'label' => __( 'A Beautiful Tile', 'disciple-tools-plugin-starter-template' ) ];
         }
         return $tiles;
